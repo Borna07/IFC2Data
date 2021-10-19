@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="btn-group" role="group" aria-label="...">
+  <ul>
+  <button type="button" class="btn btn-default btn-lg">
+      <a href="{% url 'model_form_upload' %}">Model Form Upload</a>
+  </button>
+  <button type="button" class="btn btn-default btn-lg">
+    <a href="{% url 'model_form_download' %}">Model Form Download</a>
+</button>
+  </ul>
+  
+</div>
+
+
+</button>
+  <p>Uploaded files:</p>
+  <ul>
+    {% for obj in documents %}
+      <li>
+        <a href="{{ obj.document.url }}">{{ obj.document.name }}</a>
+        <small>(Uploaded at: {{ obj.uploaded_at }})</small>
+      </li>
+    {% endfor %}
+  </ul>
+
+
+<!--
+  <h1>{{ documents.last.document.name}}</h1>
+
+  <a href="{{ documents.document.url }}" download="{{ documents.document.url }}"> Download File</a>
+
+
+-->
+
+
+{% endblock %}

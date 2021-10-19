@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<form action="" method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Download">
+ </form>
+
+
+
+
+  <p><a href="{% url 'home' %}">Return to home</a></p>
+{% endblock %}
