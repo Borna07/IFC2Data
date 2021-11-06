@@ -2,8 +2,18 @@
 
 {% block content %}
 
-
+<!--
 <form action="" method="POST">
+  {% csrf_token %}
+  {{ form_format.as_p }}
+  <input type="submit" value="Download">
+ </form>
+-->
+
+
+
+
+<form action="" name="" method="POST">
   {% csrf_token %}
   {{ form.as_p }}
   <input type="submit" value="Download">
