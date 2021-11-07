@@ -2,17 +2,19 @@ from django.forms import models
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+from ifcopenshell.file import file
 
 from uploads.core.models import Document
+# from uploads.core.forms import DocumentForm, FormatForm
 from uploads.core.forms import DocumentForm
-from uploads.core.forms import FileFormatForm 
+
+from uploads.core.forms import DownloadForm
 from django.http import FileResponse
-import mimetypes
 
 # Import HttpResponse module
 from django.http.response import HttpResponse
 
-from uploads.Functions import all_divide, parser, unique, unique_divide
+from uploads.Functions import all_divide, parser, unique, unique_csv, unique_divide
 import os
 
 from pathlib import Path
@@ -25,7 +27,7 @@ DOCU_DIR = Path(BASE_DIR) / 'media' / 'documents'
 
 def home(request):
     documents = Document.objects.all()
-    return render(request, 'core/home.html', { 'documents': documents, 'form': FileFormatForm() })
+    return render(request, 'core/home.html', { 'documents': documents, 'form': DownloadForm() })
 
 
 
@@ -39,7 +41,7 @@ def model_form_upload(request):
 
                 MODEL_DIR = Path(MEDIA_DIR) / myfile.name        # path to saved ifc file
                 
-                return redirect('home')
+                return redirect('model_form_download')
     else:
         form = DocumentForm()
     return render(request, 'core/model_form_upload.html', {
@@ -49,11 +51,13 @@ def model_form_upload(request):
 
 
 
+
 def model_form_download(request):
-    form = FileFormatForm(request.POST)
+    form = DownloadForm(request.POST or None, initial={"file_download": "all","file_format": "xlsx"})
 
     if form.is_valid():
-        selected = form.cleaned_data.get("file_format")     #get the radio button value
+        selected = form.cleaned_data.get("file_download")     #get the radio button value
+        file_format = form.cleaned_data.get("file_format")
         
         last_model = Document.objects.latest("uploaded_at")         # QuerySet method to take the last uploaded element; "uploaded_at" is a model field
         last_model_name = last_model.document.name
@@ -63,40 +67,100 @@ def model_form_download(request):
         last_model_name = last_model.document.name
         MODEL_DIR = Path(MEDIA_DIR) / last_model_name               # path to last uploaded document
         model = parser(MODEL_DIR)                                   # parsing the ifc file and converting to xlsx
+        xlsx_name = Path(last_model_name).stem                      # get the name of last uploaded document without the suffix            
 
-        if selected == "all":        
-            xlsx_name = Path(last_model_name).stem                      # get the name of last uploaded document without the suffix            
-            XLS_DIR = Path(DOCU_DIR) / (xlsx_name + '_ALL.xlsx')  
-        
-            model.to_excel(XLS_DIR)                                # saving the converted ifc file to documents
-            response = FileResponse(open(XLS_DIR, 'rb'))
+        if selected == "all":
+            if file_format == "xlsx":
+                XLS_DIR = Path(DOCU_DIR) / (xlsx_name + '_ALL.xlsx')  
+                model.to_excel(XLS_DIR)                                # saving the converted ifc file to documents
+                response = FileResponse(open(XLS_DIR, 'rb'))
+            if file_format == "csv":
+                CSV_DIR = Path(DOCU_DIR) / (xlsx_name + '_ALL.csv')  
+                model.to_csv(CSV_DIR, encoding = 'utf-8')                                # saving the converted ifc file to documents
+                response = FileResponse(open(CSV_DIR, 'rb'))
             return response
 
+
+
         if selected == "all_divide":
-            xlsx_name = Path(last_model_name).stem                      # get the name of last uploaded document without the suffix            
             XLS_DIR = Path(DOCU_DIR) / (xlsx_name + '_ALL_per_Type.xlsx')  
-        
             all_divide(model, XLS_DIR)
             response = FileResponse(open(XLS_DIR, 'rb'))
             return response
 
         if selected == "unique":
-            xlsx_name = Path(last_model_name).stem                      # get the name of last uploaded document without the suffix            
-            XLS_DIR = Path(DOCU_DIR) / (xlsx_name + '_UNIQUE.xlsx') 
-            unique(model, XLS_DIR)
-            response = FileResponse(open(XLS_DIR, 'rb'))
+            if file_format == "xlsx":
+                XLS_DIR = Path(DOCU_DIR) / (xlsx_name + '_UNIQUE.xlsx') 
+                unique(model, XLS_DIR)
+                response = FileResponse(open(XLS_DIR, 'rb'))
+            if file_format == "csv":
+                CSV_DIR = Path(DOCU_DIR) / (xlsx_name + '_ALL.csv')  
+                unique_csv(model, CSV_DIR)
+                response = FileResponse(open(CSV_DIR, 'rb'))
             return response
 
         if selected == "unique_divide":
-            xlsx_name = Path(last_model_name).stem                      # get the name of last uploaded document without the suffix            
             XLS_DIR = Path(DOCU_DIR) / (xlsx_name + '_UNIQUE_per_Type.xlsx') 
             unique_divide(model, XLS_DIR)
             response = FileResponse(open(XLS_DIR, 'rb'))
             return response
     
-    return render(request, 'core/model_form_download.html', {'form':form})
+    return render(request, 'core/model_form_download.html', {'form':form, })
 
 
+# def model_form_download(request):
+#     form = DownloadForm(request.POST or None, initial={"file_download": "all","file_format": "xlsx"})
+#     # form_format = FormatForm(request.POST or None, initial={"file_format": "xlsx"})
+
+#     # if form_format.is_valid():
+#     #     file_format = form_format.cleaned_data.get("file_format")
+#     #     print(file_format)
+
+
+#     if form.is_valid():
+#         selected = form.cleaned_data.get("file_download")     #get the radio button value
+#         file_format = form.cleaned_data.get("file_format")
+        
+#         last_model = Document.objects.latest("uploaded_at")         # QuerySet method to take the last uploaded element; "uploaded_at" is a model field
+#         last_model_name = last_model.document.name
+#         MODEL_DIR = Path(MEDIA_DIR) / last_model_name   
+#         last_model_name = last_model.document.path
+
+#         last_model_name = last_model.document.name
+#         MODEL_DIR = Path(MEDIA_DIR) / last_model_name               # path to last uploaded document
+#         model = parser(MODEL_DIR)                                   # parsing the ifc file and converting to xlsx
+#         xlsx_name = Path(last_model_name).stem                      # get the name of last uploaded document without the suffix            
+
+#         if selected == "all":
+#             XLS_DIR = Path(DOCU_DIR) / (xlsx_name + '_ALL.xlsx')  
+#             model.to_excel(XLS_DIR)                                # saving the converted ifc file to documents
+#             response = FileResponse(open(XLS_DIR, 'rb'))
+#             print(file_format)
+#             return response
+
+
+
+#         if selected == "all_divide":
+#             XLS_DIR = Path(DOCU_DIR) / (xlsx_name + '_ALL_per_Type.xlsx')  
+#             all_divide(model, XLS_DIR)
+#             response = FileResponse(open(XLS_DIR, 'rb'))
+#             return response
+
+#         if selected == "unique":
+#             XLS_DIR = Path(DOCU_DIR) / (xlsx_name + '_UNIQUE.xlsx') 
+#             unique(model, XLS_DIR)
+#             response = FileResponse(open(XLS_DIR, 'rb'))
+#             return response
+
+#         if selected == "unique_divide":
+#             XLS_DIR = Path(DOCU_DIR) / (xlsx_name + '_UNIQUE_per_Type.xlsx') 
+#             unique_divide(model, XLS_DIR)
+#             response = FileResponse(open(XLS_DIR, 'rb'))
+#             return response
+    
+#     return render(request, 'core/model_form_download.html', {'form':form, })
+
+#,{'form_format':form_format}
 
 
         # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
