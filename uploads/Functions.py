@@ -138,8 +138,22 @@ def unique(df, path):
 
     df2 = pd.DataFrame(data, names)
     df2 = df2.transpose()
-
     df2.to_excel(path)
+
+
+def unique_csv(df, path):
+    names = []
+    data = []
+    for column in df.columns:
+        name = column
+        value = list(df[name].unique())
+        names.append(name)
+        data.append(value)
+
+    df2 = pd.DataFrame(data, names)
+    df2 = df2.transpose()
+    df2.to_csv(path, encoding='utf-8')
+
 
 def unique_divide(df, path):
     worterbuch = {}

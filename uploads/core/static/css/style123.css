@@ -6,13 +6,36 @@ The CSS box model is essentially a box that wraps around every HTML element. It 
 h1{
     font-family: 'Righteous', cursive;
     text-align: center;
-    color: blue;
+    color: rgb(9, 255, 0);
 }
 
-.container{
-  color:seagreen;
-}
 
 #test{
   color: red;
+}
+
+
+html, body, .wrapper {
+  height:100%;   
+}
+
+.wrapper {
+  margin: 0 auto; /* center horizontally */
+}
+
+.wrapper td {
+  height:100%;
+  vertical-alignment: middle; /* center vertically */   
+}
+
+.content {
+  width: 350px;
+  background:#ccc;
+}
+
+ a{
+  color: cornflowerblue;
+  text-decoration:none;
+  font-family:Arial;
+  display: block;
 }
