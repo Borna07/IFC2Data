@@ -1,14 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-<!--
-<form action="" method="POST">
-  {% csrf_token %}
-  {{ form_format.as_p }}
-  <input type="submit" value="Download">
- </form>
--->
+{% load static %}
 
 
 
@@ -20,6 +13,7 @@
  </form>
 
 
+<script src="{% static 'js/radio.js' %}"></script>
 
 
   <p><a href="{% url 'home' %}">Return to home</a></p>
