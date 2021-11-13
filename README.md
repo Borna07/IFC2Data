@@ -1,11 +1,8 @@
-# Simple File Upload Example
-
-Example used in the blog post [How to Upload Files With Django](https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html)
 
 ## Running Locally
 
 ```bash
-git clone https://github.com/sibtc/simple-file-upload.git
+git clone https://github.com/Borna07/IFC2Data
 ```
 
 ```bash
