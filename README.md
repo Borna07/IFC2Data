@@ -16,3 +16,7 @@ python manage.py migrate
 ```bash
 python manage.py runserver
 ```
+
+```bash
+https://drive.google.com/drive/folders/1hTLOz1Z7yV8n5_gwsur7_906NH9pq7Ac?usp=sharing
+```
