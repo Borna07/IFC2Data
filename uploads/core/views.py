@@ -5,6 +5,8 @@ from django.core.files.storage import FileSystemStorage
 from ifcopenshell.file import file
 
 from uploads.core.models import Document
+from uploads.core.models import IfcModell
+
 # from uploads.core.forms import DocumentForm, FormatForm
 from uploads.core.forms import DocumentForm
 
@@ -14,7 +16,7 @@ from django.http import FileResponse
 # Import HttpResponse module
 from django.http.response import HttpResponse
 
-from uploads.Functions import all_divide, parser, unique, unique_csv, unique_divide
+from uploads.Functions import all_divide, parser, unique, unique_csv, unique_divide, project_information
 import os
 
 from pathlib import Path
@@ -40,6 +42,16 @@ def model_form_upload(request):
                 form.save(commit=True)
 
                 MODEL_DIR = Path(MEDIA_DIR) / myfile.name        # path to saved ifc file
+                info = project_information(MODEL_DIR)
+                IfcModell.objects.create(organization = info["organization"], 
+                                        author = info["author"], 
+                                        project_name = info["project_name"],
+                                        Name = info["Name"],
+                                        Description = info["Description"],
+                                        time_stamp = info["time_stamp"],
+                                        schema_identifiers = info["schema_identifiers"],
+                                        software = info["software"])
+                IfcModell.objects.latest("uploaded_at").name = 'DREK'
                 
                 return redirect('model_form_download')
     else:
@@ -54,15 +66,18 @@ def model_form_upload(request):
 
 def model_form_download(request):
     form = DownloadForm(request.POST or None, initial={"file_download": "all","file_format": "xlsx"})
+    ifc_data = IfcModell.objects.all()
 
     if form.is_valid():
         selected = form.cleaned_data.get("file_download")     #get the radio button value
         file_format = form.cleaned_data.get("file_format")
         
         last_model = Document.objects.latest("uploaded_at")         # QuerySet method to take the last uploaded element; "uploaded_at" is a model field
-        last_model_name = last_model.document.name
-        MODEL_DIR = Path(MEDIA_DIR) / last_model_name   
-        last_model_name = last_model.document.path
+
+
+           # last_model_name = last_model.document.name
+        # MODEL_DIR = Path(MEDIA_DIR) / last_model_name   
+        # last_model_name = last_model.document.path
 
         last_model_name = last_model.document.name
         MODEL_DIR = Path(MEDIA_DIR) / last_model_name               # path to last uploaded document
@@ -105,7 +120,7 @@ def model_form_download(request):
             response = FileResponse(open(XLS_DIR, 'rb'))
             return response
     
-    return render(request, 'core/model_form_download.html', {'form':form, })
+    return render(request, 'core/model_form_download.html', {'form':form, 'ifc':ifc_data })
 
 
 

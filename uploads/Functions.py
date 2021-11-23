@@ -175,3 +175,23 @@ def unique_divide(df, path):
         for i in worterbuch.keys():
             worterbuch[i].to_excel(writer, sheet_name=i)
 
+
+def project_information(contents):
+    ifc_file = ifc.open(contents)
+    project = ifc_file.by_type("IfcProject")[0]
+    application = ifc_file.by_type("IfcApplication")[0][2]
+    info = project.get_info()
+    project_info = {}
+    #infos = ["Name", "Description","LongName","Phase"]
+    infos = ["Name", "Description"]
+    
+    for inf in infos:
+        project_info[inf] = info[inf]
+    wrapper = ifc_file.wrapped_data.header
+    project_info.update({"organization": wrapper.file_name.organization})
+    project_info.update({"author": wrapper.file_name.author})
+    project_info.update({"time_stamp": wrapper.file_name.time_stamp})
+    project_info.update({"project_name": wrapper.file_name.name})
+    project_info.update({"schema_identifiers": wrapper.file_schema.schema_identifiers})
+    project_info.update({"software": application})
+    return project_info    
