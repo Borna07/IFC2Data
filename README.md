@@ -1,6 +1,10 @@
 
 ## Running Locally
 
+Install Python 3.8.
+https://www.python.org/downloads/release/python-380/
+
+
 ```bash
 git clone https://github.com/Borna07/IFC2Data
 ```
@@ -9,7 +13,8 @@ git clone https://github.com/Borna07/IFC2Data
 pip install -r requirements.txt
 ```
 
-Additional Python moudle. Copy to "python\Lib\site-packages"
+Additional Python moudle for IFC-Files. Copy to "python\Lib\site-packages"
+
 ```bash
 https://drive.google.com/drive/folders/1hTLOz1Z7yV8n5_gwsur7_906NH9pq7Ac?usp=sharing
 ```
