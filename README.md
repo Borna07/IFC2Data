@@ -13,14 +13,12 @@ git clone https://github.com/Borna07/IFC2Data
 pip install -r requirements.txt
 ```
 
-Additional Python moudle for IFC-Files. Copy to "python\Lib\site-packages"
+Additional Python moudle for IFC-Files. Download and copy to "python\Lib\site-packages"
 
-```bash
 https://drive.google.com/drive/folders/1hTLOz1Z7yV8n5_gwsur7_906NH9pq7Ac?usp=sharing
-```
 
 
-
+`
 ```bash
 python manage.py migrate
 ```
