@@ -18,6 +18,9 @@ Additional Python moudle for IFC-Files. Download and copy to "python\Lib\site-pa
 
 https://drive.google.com/drive/folders/1hTLOz1Z7yV8n5_gwsur7_906NH9pq7Ac?usp=sharing
 
+```bash
+python manage.py makemigrations
+```
 
 ```bash
 python manage.py migrate
