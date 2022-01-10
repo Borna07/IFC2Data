@@ -53,6 +53,14 @@ def model_form_upload(request):
                                         software = info["software"])
                 IfcModell.objects.latest("uploaded_at").name = 'DREK'
                 
+                #find the session id
+                # selected_project_id = form.cleaned_data["Project_Name"].id
+                selected_project_id = IfcModell.objects.latest("uploaded_at").id
+                
+                request.session['selected_project_id'] = selected_project_id
+                print(selected_project_id)
+
+
                 return redirect('model_form_download')
     else:
         form = DocumentForm()
@@ -75,6 +83,8 @@ def model_form_download(request):
         last_model = Document.objects.latest("uploaded_at")         # QuerySet method to take the last uploaded element; "uploaded_at" is a model field
 
 
+        selected_project_id = request.session.get('selected_project_id')
+        print(selected_project_id)
            # last_model_name = last_model.document.name
         # MODEL_DIR = Path(MEDIA_DIR) / last_model_name   
         # last_model_name = last_model.document.path
