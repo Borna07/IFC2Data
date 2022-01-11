@@ -80,12 +80,18 @@ def model_form_download(request):
         selected = form.cleaned_data.get("file_download")     #get the radio button value
         file_format = form.cleaned_data.get("file_format")
         
-        last_model = Document.objects.latest("uploaded_at")         # QuerySet method to take the last uploaded element; "uploaded_at" is a model field
+        #last_model = Document.objects.latest("uploaded_at")         # QuerySet method to take the last uploaded element; "uploaded_at" is a model field
 
 
+        #Get the session model
         selected_project_id = request.session.get('selected_project_id')
         print(selected_project_id)
-           # last_model_name = last_model.document.name
+        last_model = Document.objects.get(id = selected_project_id)
+        # last_model = Document.objects.get(id = 18)
+
+        print(last_model.document.name)
+
+        # last_model_name = last_model.document.name
         # MODEL_DIR = Path(MEDIA_DIR) / last_model_name   
         # last_model_name = last_model.document.path
 
