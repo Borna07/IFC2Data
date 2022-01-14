@@ -16,7 +16,7 @@ from django.http import FileResponse
 # Import HttpResponse module
 from django.http.response import HttpResponse
 
-from uploads.Functions import all_divide, parser, unique, unique_csv, unique_divide, project_information
+from uploads.Functions1 import all_divide, parser,Parser_api_V2, unique, unique_csv, unique_divide, project_information
 import os
 
 from pathlib import Path
@@ -74,7 +74,9 @@ def model_form_upload(request):
 
 def model_form_download(request):
     form = DownloadForm(request.POST or None, initial={"file_download": "all","file_format": "xlsx"})
-    ifc_data = IfcModell.objects.all()
+    selected_project_id = request.session.get('selected_project_id')
+
+    ifc_data = IfcModell.objects.get(id = selected_project_id)
 
     if form.is_valid():
         selected = form.cleaned_data.get("file_download")     #get the radio button value
@@ -97,7 +99,7 @@ def model_form_download(request):
 
         last_model_name = last_model.document.name
         MODEL_DIR = Path(MEDIA_DIR) / last_model_name               # path to last uploaded document
-        model = parser(MODEL_DIR)                                   # parsing the ifc file and converting to xlsx
+        model = Parser_api_V2(MODEL_DIR)                                   # parsing the ifc file and converting to xlsx
         xlsx_name = Path(last_model_name).stem                      # get the name of last uploaded document without the suffix            
 
         if selected == "all":
